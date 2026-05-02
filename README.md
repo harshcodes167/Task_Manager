@@ -1,103 +1,196 @@
-# TaskFlow — Scalable REST API with Auth & RBAC
+TaskFlow — Scalable REST API with Auth & RBAC
+A full-stack Task Manager application built with Node.js, Express, MongoDB, and React. Features JWT authentication, role-based access control (user/admin), full CRUD operations, Swagger API documentation, and a clean dark-themed frontend.
 
-A full-stack Task Manager with JWT authentication, role-based access control, and a React frontend.
+🔗 Live Demo / Repository
 
-## Tech Stack
+GitHub: https://github.com/harshcodes167/Task_Manager
 
-**Backend:** Node.js, Express.js, MongoDB (Mongoose), JWT, bcryptjs  
-**Frontend:** React.js (Vite), React Router, Axios, react-hot-toast  
-**Docs:** Swagger UI (OpenAPI 3.0)  
 
----
+🛠 Tech Stack
+LayerTechnologyBackendNode.js, Express.jsDatabaseMongoDB (Mongoose ODM)AuthJWT (jsonwebtoken), bcryptjsValidationexpress-validatorSecurityHelmet.js, CORS, Rate LimitingAPI DocsSwagger UI (OpenAPI 3.0)FrontendReact.js (Vite), React Router v6HTTP ClientAxiosNotificationsreact-hot-toast
 
-## Prerequisites
+✅ Features Implemented
+Backend
 
-- Node.js v18+
-- MongoDB (local or MongoDB Atlas)
-- npm
+User registration & login with bcrypt password hashing (salt rounds: 12)
+JWT-based authentication with configurable expiry
+Role-based access control — user and admin roles
+Full CRUD REST API for Tasks (with filtering & pagination)
+Admin-only endpoints for user management and platform stats
+API versioning (/api/v1/)
+Global error handling middleware
+Input validation and sanitization
+Rate limiting (100 requests per 15 minutes per IP)
+HTTP security headers via Helmet
+Swagger/OpenAPI documentation
 
----
+Frontend
 
-## Setup & Run
+Register & Login pages with form validation
+Protected routes (JWT required to access dashboard)
+Task dashboard: create, edit, delete, update status
+Filter tasks by status and priority
+Admin panel: view all users, delete users, view stats
+Success/error toast notifications
+Responsive dark UI
 
-### 1. Clone / extract the project
 
-### 2. Backend Setup
+📁 Project Structure
+project/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── db.js              # MongoDB connection
+│   │   │   └── swagger.js         # Swagger config
+│   │   ├── controllers/
+│   │   │   ├── authController.js  # Register, Login, Me
+│   │   │   ├── taskController.js  # Task CRUD
+│   │   │   └── adminController.js # Admin routes
+│   │   ├── middleware/
+│   │   │   ├── auth.js            # JWT protect + authorize
+│   │   │   ├── validate.js        # Validation result handler
+│   │   │   └── errorHandler.js    # Global error handler
+│   │   ├── models/
+│   │   │   ├── User.js
+│   │   │   └── Task.js
+│   │   ├── routes/
+│   │   │   ├── authRoutes.js
+│   │   │   ├── taskRoutes.js
+│   │   │   └── adminRoutes.js
+│   │   ├── utils/
+│   │   │   ├── jwt.js
+│   │   │   └── response.js
+│   │   ├── validators/
+│   │   │   └── index.js
+│   │   └── server.js
+│   ├── .env
+│   ├── .env.example
+│   └── package.json
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── TaskCard.jsx
+│   │   │   └── TaskModal.jsx
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
+│   │   ├── pages/
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   └── AdminPanel.jsx
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css
+│   ├── index.html
+│   └── package.json
+│
+├── README.md
+└── SCALABILITY.md
 
-```bash
-cd backend
+⚙️ Setup & Installation
+Prerequisites
+
+Node.js v18 or higher
+MongoDB (local installation or MongoDB Atlas free tier)
+npm
+
+
+Step 1 — Clone the repository
+bashgit clone https://github.com/your-username/taskflow.git
+cd taskflow
+
+Step 2 — Backend Setup
+bashcd backend
 npm install
-cp .env.example .env
-# Edit .env — update MONGODB_URI and JWT_SECRET
-npm run dev
-```
+Create your .env file:
+bashcp .env.example .env
+Open .env and configure:
+envPORT=5000
+MONGODB_URI=mongodb://localhost:27017/taskmanager
+JWT_SECRET=your_super_secret_key_min_32_characters
+JWT_EXPIRE=7d
+NODE_ENV=development
 
-Backend runs at: `http://localhost:5000`  
-Swagger docs at: `http://localhost:5000/api-docs`
+If using MongoDB Atlas, replace MONGODB_URI with your Atlas connection string.
 
-### 3. Frontend Setup (new terminal)
+Start the backend server:
+bashnpm run dev
+Backend will run at: http://localhost:5000
+Swagger API docs at: http://localhost:5000/api-docs
 
-```bash
-cd frontend
+Step 3 — Frontend Setup
+Open a new terminal:
+bashcd frontend
 npm install
 npm run dev
-```
+Frontend will run at: http://localhost:3000
 
-Frontend runs at: `http://localhost:3000`
+📡 API Endpoints
+Authentication — /api/v1/auth
+MethodEndpointAuth RequiredDescriptionPOST/registerNoRegister a new userPOST/loginNoLogin and receive JWT tokenGET/meJWTGet current logged-in user
+Tasks — /api/v1/tasks
+MethodEndpointAuth RequiredDescriptionGET/JWTGet all tasks (admin sees all, user sees own)GET/:idJWTGet a single task by IDPOST/JWTCreate a new taskPUT/:idJWTUpdate an existing taskDELETE/:idJWTDelete a task
+Query params for GET /tasks: ?status=todo&priority=high&page=1&limit=10
+Admin — /api/v1/admin (Admin role required)
+MethodEndpointAuth RequiredDescriptionGET/statsJWT + AdminPlatform statisticsGET/usersJWT + AdminList all usersDELETE/users/:idJWT + AdminDelete a user and their tasks
 
----
+🗄️ Database Schema
+User Collection
+name        String   required, 2-50 chars
+email       String   required, unique
+password    String   hashed with bcrypt (salt: 12)
+role        Enum     ['user', 'admin']  default: 'user'
+isActive    Boolean  default: true
+createdAt   Date     auto
+updatedAt   Date     auto
+Task Collection
+title       String   required, 3-100 chars
+description String   optional, max 500 chars
+status      Enum     ['todo', 'in-progress', 'done']  default: 'todo'
+priority    Enum     ['low', 'medium', 'high']  default: 'medium'
+dueDate     Date     optional
+user        ObjectId ref: User (required)
+createdAt   Date     auto
+updatedAt   Date     auto
+Indexes applied on { user, status } and { user, createdAt } for query performance.
 
-## API Endpoints (v1)
+🔒 Security Practices
 
-### Auth — `/api/v1/auth`
-| Method | Endpoint    | Auth | Description        |
-|--------|-------------|------|--------------------|
-| POST   | /register   | No   | Register user      |
-| POST   | /login      | No   | Login, get JWT     |
-| GET    | /me         | JWT  | Get current user   |
+Passwords hashed using bcrypt with salt rounds of 12
+JWT tokens signed with a secret key, verified on every protected request
+Helmet.js sets secure HTTP response headers
+CORS restricted to trusted origins only (localhost:3000, localhost:5173)
+Rate limiting — 100 requests per 15 minutes per IP address
+Input validation on all POST/PUT endpoints via express-validator
+Role-based middleware protects all admin routes
+JWT payload contains only id and role (no sensitive data)
+Passwords excluded from all API responses via select: false
 
-### Tasks — `/api/v1/tasks`
-| Method | Endpoint | Auth | Description           |
-|--------|----------|------|-----------------------|
-| GET    | /        | JWT  | Get tasks (filtered)  |
-| GET    | /:id     | JWT  | Get single task       |
-| POST   | /        | JWT  | Create task           |
-| PUT    | /:id     | JWT  | Update task           |
-| DELETE | /:id     | JWT  | Delete task           |
 
-### Admin — `/api/v1/admin` (Admin only)
-| Method | Endpoint     | Auth       | Description       |
-|--------|--------------|------------|-------------------|
-| GET    | /stats       | JWT+Admin  | Platform stats    |
-| GET    | /users       | JWT+Admin  | All users         |
-| DELETE | /users/:id   | JWT+Admin  | Delete a user     |
+📊 API Documentation
+Swagger UI is available once the backend is running:
+http://localhost:5000/api-docs
+You can test all endpoints directly from the browser. To test protected routes, click Authorize and enter your JWT token as Bearer <your_token>.
 
----
+🚀 Scalability
+See SCALABILITY.md for a detailed note on scaling this system with microservices, Redis caching, load balancing, and Docker deployment.
+Key scalability decisions already built in:
 
-## Database Schema
+Stateless JWT auth (horizontally scalable from day one)
+Modular controller/route structure (easy microservice extraction)
+MongoDB indexes for performant queries at scale
+Environment-based config (12-factor app ready)
 
-### User
-- `name` String, required
-- `email` String, unique, required
-- `password` String, hashed (bcrypt, salt 12)
-- `role` Enum [user, admin]
-- `isActive` Boolean
 
-### Task
-- `title` String, required
-- `description` String
-- `status` Enum [todo, in-progress, done]
-- `priority` Enum [low, medium, high]
-- `dueDate` Date
-- `user` ObjectId (ref: User)
+👤 Author
+Harsh Katiyar
 
----
+GitHub: [@harshcodes167](https://github.com/harshcodes167)
+Email: harshofficial@gmail.com
 
-## Security
-- Passwords hashed with bcrypt (salt rounds: 12)
-- JWT tokens with configurable expiry
-- Helmet.js for HTTP headers
-- CORS restricted to localhost:3000 and 5173
-- Rate limiting (100 req/15min per IP)
-- Input validation with express-validator
-- Role-based middleware on all admin routes
+
+Built as part of the Primetrade.ai Backend Developer Intern Assignment
