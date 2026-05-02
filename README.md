@@ -6,7 +6,7 @@ A full-stack Task Manager application built with Node.js, Express, MongoDB, and 
 
 ## 🔗 Repository
 
-> GitHub: [your-github-link-here]
+> GitHub: https://github.com/harshcodes167/Task_Manager
 
 ---
 
@@ -283,9 +283,9 @@ Key scalability decisions already built in:
 
 ## 👤 Author
 
-**[Your Name]**
-- GitHub: [@your-username](https://github.com/your-username)
-- Email: your@email.com
+Harsh Katiyar
+- GitHub: [@harshcodes167](https://github.com/harshcodes167)
+- Email: harshofficial5927@gmail.com
 
 ---
 
